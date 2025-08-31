@@ -4,7 +4,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Setup
 
-Clone reposetory, in bash `cd address-checker` and then run `npm install` to install project dependencies 
+1. Clone reposetory
+2. Navigate into the project folder: `cd address-checker`
+3. Install the project dependencies: `npm install`
 
 ## Available Scripts
 
