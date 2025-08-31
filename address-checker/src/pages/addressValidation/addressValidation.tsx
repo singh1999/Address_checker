@@ -129,7 +129,7 @@ export const AddressValidation = () => {
           startIcon={<AddIcon />}
           disabled={loading}
         >
-          {'Add Field'}
+          {'New address field'}
         </StyledButton>
         <StyledButton
           onClick={handleSubmit}
