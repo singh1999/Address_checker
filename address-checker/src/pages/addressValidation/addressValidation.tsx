@@ -1,48 +1,134 @@
 import React, { useState } from 'react';
-import { validateStreetName } from '../../services/addressValidationService/addressValidationService';
-import { StreetName } from './addressValidation.types';
+import {
+  validateStreetName,
+  validateStreetNumber,
+} from '../../services/addressValidationService/addressValidationService';
+import {
+  Street,
+  StreetName,
+  StreetNumber,
+  StreetNumberResult,
+} from './addressValidation.types';
 import { Alert, Button, TextField } from '@mui/material';
-import { StyledValidationContainer } from './addressValidation.styled';
+import {
+  StyledTextFieldContainer,
+  StyledValidationContainer,
+} from './addressValidation.styled';
 
 export const AddressValidation = () => {
-  const [streetNameInput, setStreetNameInput] = useState('');
-  const [alertMessage, setAlerMessage] = useState('');
+  const [streetAddress, setStreetAddress] = useState({
+    streetName: '',
+    houseNumber: '',
+    houseLetter: '',
+  });
+  const [alertMessage, setAlertMessage] = useState('');
   const [error, setError] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!streetNameInput) {
+    if (!streetAddress.streetName) {
       setError(true);
-      setAlerMessage('Empty street name field');
+      setAlertMessage('Empty street name field');
       return;
     }
 
-    const apiResult: StreetName = await validateStreetName(streetNameInput);
-    if (apiResult.totalResults > 0) {
-      console.log(apiResult);
-      setAlerMessage('Valid street name');
-      setError(false);
-    } else {
-      setAlerMessage('No street found');
+    const streetNameApiResult: StreetName = await validateStreetName(
+      streetAddress.streetName
+    );
+
+    if (streetNameApiResult.totalResults === 0) {
       setError(true);
+      setAlertMessage('No street found');
+      return;
+    }
+
+    if (!streetAddress.houseNumber && !streetAddress.houseLetter) {
+      setError(false);
+      setAlertMessage('Valid street name');
+      return;
+    }
+
+    const houseNumberToCheck = parseInt(streetAddress.houseNumber);
+    const houseLetter = streetAddress.houseLetter;
+    const streetIds = streetNameApiResult.streets.flatMap(
+      (street: Street) => street.streetIds
+    );
+    const streetNumberSearchResult: StreetNumberResult =
+      await validateStreetNumber(streetIds, houseNumberToCheck);
+
+    const streetNumbersList = streetNumberSearchResult.streetNumbers || [];
+
+    // Find a matching street number + house letter
+    const matchedObj = streetNumbersList.find((streetNumber: StreetNumber) => {
+      if (houseLetter && streetNumber.entrance) {
+        return (
+          streetNumber.streetNo === houseNumberToCheck &&
+          streetNumber.entrance.toLowerCase() === houseLetter.toLowerCase()
+        );
+      } else {
+        return (
+          streetNumber.streetNo === houseNumberToCheck && houseLetter === ''
+        );
+      }
+    });
+
+    if (matchedObj) {
+      setError(false);
+      setAlertMessage(
+        'Valid street address: ' +
+          'Lat ' +
+          matchedObj.latitude +
+          ' Long ' +
+          matchedObj.longitude
+      );
+    } else {
+      setError(true);
+      setAlertMessage('Street number not found');
     }
   };
 
   return (
     <StyledValidationContainer>
-      <TextField
-        label="Street name"
-        value={streetNameInput}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-          setStreetNameInput(e.target.value)
-        }
-        error={error}
-      ></TextField>
-      {error ? (
-        <Alert severity="error">{alertMessage}</Alert>
-      ) : (
-        <Alert severity="success">{alertMessage}</Alert>
+      <StyledTextFieldContainer>
+        <TextField
+          label="Street name"
+          value={streetAddress.streetName}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setStreetAddress((prev) => ({
+              ...prev,
+              streetName: e.target.value,
+            }))
+          }
+          error={error}
+        ></TextField>
+        <TextField
+          label="House number"
+          value={streetAddress.houseNumber ?? ''}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setStreetAddress((prev) => ({
+              ...prev,
+              houseNumber: e.target.value,
+            }))
+          }
+          error={error}
+          type="number"
+        ></TextField>
+        <TextField
+          label="House letter"
+          value={streetAddress.houseLetter}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setStreetAddress((prev) => ({
+              ...prev,
+              houseLetter: e.target.value,
+            }))
+          }
+          error={error}
+          type="text"
+        ></TextField>
+      </StyledTextFieldContainer>
+      {alertMessage && (
+        <Alert severity={error ? 'error' : 'success'}>{alertMessage}</Alert>
       )}
       <Button onClick={handleSubmit} variant="contained">
         Validate address

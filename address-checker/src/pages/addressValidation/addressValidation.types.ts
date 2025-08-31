@@ -1,8 +1,18 @@
 export type StreetName = {
-  street: street[];
+  streets: Street[];
   totalResults: number;
 };
 
-type street = {
+export type Street = {
   streetIds: number[];
+};
+export type StreetNumberResult = {
+  streetNumbers: StreetNumber[];
+};
+
+export type StreetNumber = {
+  streetNo: number;
+  entrance: string;
+  latitude: number;
+  longitude: number;
 };

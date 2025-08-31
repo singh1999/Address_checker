@@ -8,3 +8,10 @@ export const StyledValidationContainer = styled('div')(() => {
     gap: 12,
   } as const;
 });
+export const StyledTextFieldContainer = styled('div')(() => {
+  return {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 8,
+  } as const;
+});
