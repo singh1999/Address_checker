@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { ValidationResult, AddressField } from './addressValidation.types';
-import { Alert, Button, TextField } from '@mui/material';
+import { Button, TextField } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
+  StyledAlert,
+  StyledButton,
   StyledTextFieldContainer,
   StyledValidationContainer,
 } from './addressValidation.styled';
@@ -14,7 +18,7 @@ export const AddressValidation = () => {
   const [validationResults, setValidationResults] = useState<
     ValidationResult[]
   >([]);
-
+  const [loading, setLoading] = useState<boolean>(false);
   const handleFieldChange = (
     index: number,
     key: AddressField,
@@ -42,7 +46,7 @@ export const AddressValidation = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
+    setLoading(true);
     const validAddresses = addressFields.filter(
       (field) => field.streetName.length > 0
     );
@@ -57,6 +61,7 @@ export const AddressValidation = () => {
           message: 'Enter one street name',
         },
       ]);
+      setLoading(false);
       return;
     }
 
@@ -65,7 +70,9 @@ export const AddressValidation = () => {
     );
 
     setValidationResults(results);
+    setLoading(false);
   };
+  console.log(loading);
 
   return (
     <StyledValidationContainer>
@@ -89,7 +96,6 @@ export const AddressValidation = () => {
                   handleFieldChange(i, 'houseNumber', e.target.value)
                 }
                 error={validationResult ? !validationResult.valid : false}
-                type="number"
               ></TextField>
               <TextField
                 label="House letter"
@@ -98,32 +104,43 @@ export const AddressValidation = () => {
                   handleFieldChange(i, 'houseLetter', e.target.value)
                 }
                 error={validationResult ? !validationResult.valid : false}
-                type="text"
               ></TextField>
               {addressFields.length > 1 && (
                 <Button
                   onClick={() => handleRemoveField(i)}
                   variant="contained"
+                  endIcon={<DeleteIcon />}
                 >
                   remove field
                 </Button>
               )}
             </StyledTextFieldContainer>
             {validationResult && (
-              <Alert severity={validationResult.valid ? 'success' : 'error'}>
+              <StyledAlert
+                severity={validationResult.valid ? 'success' : 'error'}
+              >
                 {validationResult.message}
-              </Alert>
+              </StyledAlert>
             )}
           </div>
         );
       })}
 
-      <Button onClick={handleAddFeild} variant="contained">
-        Add Field
-      </Button>
-      <Button onClick={handleSubmit} variant="contained">
-        Validate address
-      </Button>
+      <StyledButton
+        onClick={handleAddFeild}
+        variant="contained"
+        startIcon={<AddIcon />}
+        disabled={loading}
+      >
+        {'Add Field'}
+      </StyledButton>
+      <StyledButton
+        onClick={handleSubmit}
+        variant="outlined"
+        disabled={loading}
+      >
+        {loading ? 'Validating....' : 'Validate address'}
+      </StyledButton>
     </StyledValidationContainer>
   );
 };

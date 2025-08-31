@@ -1,12 +1,17 @@
-import './App.css';
 import { AddressValidation } from './pages/addressValidation/addressValidation';
+import Toolbar from '@mui/material/Toolbar';
+import AppBar from '@mui/material/AppBar';
+import { Typography } from '@mui/material';
 
-function App() {
+export const App = () => {
   return (
-    <div className="App">
+    <>
+      <AppBar>
+        <Toolbar>
+          <Typography variant="h4">Address checker</Typography>
+        </Toolbar>
+      </AppBar>
       <AddressValidation />
-    </div>
+    </>
   );
-}
-
-export default App;
+};
