@@ -1,18 +1,10 @@
-export type StreetName = {
-  streets: Street[];
-  totalResults: number;
-};
+export type AddressField = 'streetName' | 'houseNumber' | 'houseLetter';
+export type ValidationResult = ResultValues | null;
 
-export type Street = {
-  streetIds: number[];
-};
-export type StreetNumberResult = {
-  streetNumbers: StreetNumber[];
-};
-
-export type StreetNumber = {
-  streetNo: number;
-  entrance: string;
-  latitude: number;
-  longitude: number;
+type ResultValues = {
+  streetName: string;
+  houseNumber: string;
+  houseLetter: string;
+  valid: boolean;
+  message: string;
 };
