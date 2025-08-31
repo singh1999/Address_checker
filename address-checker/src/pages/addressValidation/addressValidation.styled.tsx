@@ -13,6 +13,7 @@ export const StyledValidationContainer = styled('div')(() => {
     '@media(max-width: 600px)': {
       maxWidth: '100%',
       marginTop: 75,
+      gap: 30,
     },
     alignItems: 'center',
     justifyContent: 'center',
@@ -20,17 +21,16 @@ export const StyledValidationContainer = styled('div')(() => {
 });
 export const StyledTextFieldContainer = styled('div')(() => {
   return {
-    display: 'flex',
-    flexDirection: 'row',
+    display: 'grid',
+    gridTemplateColumns: '2fr 1fr 1fr auto',
     gap: 8,
-    '& > :first-child': {
-      flex: 3,
-    },
-    '& > :not(:first-child):not(:last-child)': {
-      flex: 1,
-    },
-    '& > :last-child': {
-      flex: '0 0 auto',
+
+    '@media(max-width: 600px)': {
+      gridTemplateColumns: '1fr 1fr auto', // 3 columns for the row under first child
+      gridTemplateRows: 'auto auto', // first row = first child, second row = rest
+      '& > :first-child': {
+        gridColumn: '1 / -1', // first child spans full width
+      },
     },
   } as const;
 });
@@ -45,4 +45,12 @@ export const StyledButton = styled(Button)(() => {
   return {
     minWidth: 200,
   };
+});
+
+export const StyledActionButtonsContainer = styled('div')(() => {
+  return {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 12,
+  } as const;
 });

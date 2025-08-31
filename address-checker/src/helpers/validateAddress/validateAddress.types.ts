@@ -1,7 +1,7 @@
 export type AddressField = {
   streetName: string;
-  houseNumber: string;
-  houseLetter: string;
+  streetNumber: string;
+  entrance: string;
 };
 export type StreetSearchResult = {
   streets: Street[];

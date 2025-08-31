@@ -4,6 +4,7 @@ import { IconButton, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
+  StyledActionButtonsContainer,
   StyledAlert,
   StyledButton,
   StyledTextFieldContainer,
@@ -13,7 +14,7 @@ import { validateAddress } from '../../helpers/validateAddress/validateAddress';
 
 export const AddressValidation = () => {
   const [addressFields, setAddressFields] = useState([
-    { streetName: '', houseNumber: '', houseLetter: '' },
+    { streetName: '', streetNumber: '', entrance: '' },
   ]);
   const [validationResults, setValidationResults] = useState<
     ValidationResult[]
@@ -32,7 +33,7 @@ export const AddressValidation = () => {
   const handleAddFeild = () => {
     setAddressFields([
       ...addressFields,
-      { streetName: '', houseNumber: '', houseLetter: '' },
+      { streetName: '', streetNumber: '', entrance: '' },
     ]);
     setValidationResults([...validationResults, null]);
   };
@@ -54,9 +55,7 @@ export const AddressValidation = () => {
     if (validAddresses.length === 0) {
       setValidationResults([
         {
-          streetName: '',
-          houseNumber: '',
-          houseLetter: '',
+          ...addressFields,
           valid: false,
           message: 'Enter one street name',
         },
@@ -72,7 +71,6 @@ export const AddressValidation = () => {
     setValidationResults(results);
     setLoading(false);
   };
-  console.log(loading);
 
   return (
     <StyledValidationContainer>
@@ -82,7 +80,7 @@ export const AddressValidation = () => {
           <div key={i}>
             <StyledTextFieldContainer>
               <TextField
-                label="Street name"
+                label={'Street name ' + (i + 1)}
                 value={streetAddress.streetName}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleFieldChange(i, 'streetName', e.target.value)
@@ -90,18 +88,18 @@ export const AddressValidation = () => {
                 error={validationResult ? !validationResult.valid : false}
               ></TextField>
               <TextField
-                label="House number"
-                value={streetAddress.houseNumber}
+                label="Street number"
+                value={streetAddress.streetNumber}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleFieldChange(i, 'houseNumber', e.target.value)
+                  handleFieldChange(i, 'streetNumber', e.target.value)
                 }
                 error={validationResult ? !validationResult.valid : false}
               ></TextField>
               <TextField
-                label="House letter"
-                value={streetAddress.houseLetter}
+                label="Entrance"
+                value={streetAddress.entrance}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  handleFieldChange(i, 'houseLetter', e.target.value)
+                  handleFieldChange(i, 'entrance', e.target.value)
                 }
                 error={validationResult ? !validationResult.valid : false}
               ></TextField>
@@ -124,22 +122,23 @@ export const AddressValidation = () => {
           </div>
         );
       })}
-
-      <StyledButton
-        onClick={handleAddFeild}
-        variant="contained"
-        startIcon={<AddIcon />}
-        disabled={loading}
-      >
-        {'Add Field'}
-      </StyledButton>
-      <StyledButton
-        onClick={handleSubmit}
-        variant="outlined"
-        disabled={loading}
-      >
-        {loading ? 'Validating....' : 'Validate address'}
-      </StyledButton>
+      <StyledActionButtonsContainer>
+        <StyledButton
+          onClick={handleAddFeild}
+          variant="outlined"
+          startIcon={<AddIcon />}
+          disabled={loading}
+        >
+          {'Add Field'}
+        </StyledButton>
+        <StyledButton
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={loading}
+        >
+          {loading ? 'Validating....' : 'Validate address'}
+        </StyledButton>
+      </StyledActionButtonsContainer>
     </StyledValidationContainer>
   );
 };

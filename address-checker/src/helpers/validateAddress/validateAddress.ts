@@ -10,29 +10,29 @@ import {
   StreetNumberResult,
 } from './validateAddress.types';
 
-export const validateAddress = async (field: AddressField) => {
+export const validateAddress = async (addressField: AddressField) => {
   const streetNameApiResult: StreetSearchResult = await validateStreetName(
-    field.streetName
+    addressField.streetName
   );
 
   if (streetNameApiResult.totalResults === 0) {
     return {
-      ...field,
+      ...addressField,
       valid: false,
-      message: 'Street name not valid',
+      message: 'Street name not valid: ' + addressField.streetName,
     };
   }
 
-  if (!field.houseNumber && !field.houseLetter) {
+  if (!addressField.streetNumber && !addressField.entrance) {
     return {
-      ...field,
+      ...addressField,
       valid: true,
-      message: 'Valid street name',
+      message: 'Valid street name: ' + addressField.streetName,
     };
   }
 
-  const houseNumberToCheck = parseInt(field.houseNumber);
-  const houseLetter = field.houseLetter;
+  const houseNumberToCheck = parseInt(addressField.streetNumber);
+  const entrance = addressField.entrance;
 
   const streetIds = streetNameApiResult.streets.flatMap(
     (street: Street) => street.streetIds
@@ -44,27 +44,37 @@ export const validateAddress = async (field: AddressField) => {
   const streetNumbersList = streetNumberSearchResult.streetNumbers || [];
 
   const matchedObj = streetNumbersList.find((streetNumber: StreetNumber) => {
-    if (houseLetter && streetNumber.entrance) {
+    if (entrance && streetNumber.entrance) {
       return (
         streetNumber.streetNo === houseNumberToCheck &&
-        streetNumber.entrance.toLowerCase() === houseLetter.toLowerCase()
+        streetNumber.entrance.toLowerCase() === entrance.toLowerCase()
       );
     } else {
-      return streetNumber.streetNo === houseNumberToCheck && houseLetter === '';
+      return streetNumber.streetNo === houseNumberToCheck && entrance === '';
     }
   });
 
   if (matchedObj) {
     return {
-      ...field,
+      ...addressField,
       valid: true,
-      message: 'Valid street address',
+      message:
+        'Valid address: ' +
+        addressField.streetName +
+        ' ' +
+        addressField.streetNumber +
+        addressField.entrance,
     };
   }
 
   return {
-    ...field,
+    ...addressField,
     valid: false,
-    message: 'Address not found',
+    message:
+      'Address not found: ' +
+      addressField.streetName +
+      ' ' +
+      addressField.streetNumber +
+      addressField.entrance,
   };
 };
