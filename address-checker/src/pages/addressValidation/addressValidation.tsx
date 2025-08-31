@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ValidationResult, AddressField } from './addressValidation.types';
-import { Button, TextField } from '@mui/material';
+import { IconButton, TextField } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {
@@ -106,13 +106,12 @@ export const AddressValidation = () => {
                 error={validationResult ? !validationResult.valid : false}
               ></TextField>
               {addressFields.length > 1 && (
-                <Button
+                <IconButton
+                  aria-label="remove address field"
                   onClick={() => handleRemoveField(i)}
-                  variant="contained"
-                  endIcon={<DeleteIcon />}
                 >
-                  remove field
-                </Button>
+                  <DeleteIcon />
+                </IconButton>
               )}
             </StyledTextFieldContainer>
             {validationResult && (
